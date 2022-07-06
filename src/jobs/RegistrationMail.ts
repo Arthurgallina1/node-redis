@@ -2,6 +2,7 @@ import Mail from '../lib/Mail'
 
 export default {
     key: 'RegistrationMail',
+    options: {},
     async handle({ data }) {
         const { user } = data
 

@@ -2,7 +2,9 @@ import { hash } from 'bcryptjs'
 import { Request, Response } from 'express'
 import { v4 as uuid } from 'uuid'
 import { prisma } from '../../prisma'
+import Queue from '../lib/Queue'
 import { createConnection } from '../postgres'
+import UserRepository from '../repository/UserRepository'
 
 export class CreateUserController {
     async handle(request: Request, response: Response) {
@@ -34,33 +36,22 @@ export class CreateUserController {
     }
 
     async handleUsingPrisma(request: Request, response: Response) {
-        const { username, name, password } = request.body
+        const { username, name, password, email } = request.body
 
-        const user = await prisma.user.findFirst({
-            where: {
-                name,
-            },
-        })
-
-        console.log(user, 'uer')
-
+        const user = await UserRepository.findByName(name)
         if (user) {
-            return response.status(400).json({ error: 'User already exists' })
+            return response.status(400).json({ error: 'User already exists!' })
         }
 
         const passwordHash = await hash(password, 8)
-
-        const id = uuid()
-
-        const createdUser = await prisma.user.create({
-            data: {
-                username,
-                name,
-                email: id,
-                password: passwordHash,
-            },
+        const createdUser = await UserRepository.create({
+            username,
+            email,
+            name,
+            passwordHash,
         })
 
+        await Queue.add('RegistrationMail', { user: createdUser })
         return response.send(createdUser)
     }
 }

@@ -9,7 +9,10 @@
         "dev:queue": "nodemon --watch 'src/queue.ts' --exec 'ts-node src/queue.ts' -e ts"
     },
     "dependencies": {
+        "@bull-board/api": "^4.0.0",
+        "@bull-board/express": "^4.0.0",
         "@prisma/client": "^4.0.0",
+        "axios": "^0.27.2",
         "bcryptjs": "^2.4.3",
         "bull": "^4.8.4",
         "dotenv": "^10.0.0",

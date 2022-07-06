@@ -15,7 +15,8 @@ export class EmailController {
             password,
         }
 
-        await Queue.add({ user })
+        await Queue.add('RegistrationMail', { user })
+        // await Queue.add('CallApi', { user })
 
         return response.json(user)
     }

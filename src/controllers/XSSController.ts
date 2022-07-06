@@ -3,6 +3,8 @@ import { prisma } from '../../prisma'
 import { createConnection } from '../postgres'
 
 export class XSSController {
+    errorCount = 0
+
     async handle(request: Request, response: Response) {
         const { username, name, password } = request.body
 
@@ -21,6 +23,10 @@ export class XSSController {
     }
 
     async handleRead(request: Request, response: Response) {
+        if (Date.now() % 2 === 0) {
+            return response.status(403).json()
+        }
+
         const user = await prisma.user.findMany()
         return response.json(user)
     }
