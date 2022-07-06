@@ -1,5 +1,6 @@
 import { Router } from 'express'
 import { CreateUserController } from './controllers/CreateUserController'
+import { EmailController } from './controllers/EmailController'
 import { GetUserInfoController } from './controllers/GetUserInfoController'
 import { LoginUserController } from './controllers/LoginUserController'
 import { XSSController } from './controllers/XSSController'
@@ -11,6 +12,9 @@ const createUserController = new CreateUserController()
 const loginUserController = new LoginUserController()
 const getUserInfoController = new GetUserInfoController()
 const xssController = new XSSController()
+const emailController = new EmailController()
+
+router.post('/email', emailController.handle)
 
 router.get('/xss', xssController.handleRead)
 router.post('/xss', xssController.handle)
