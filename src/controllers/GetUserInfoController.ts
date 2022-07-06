@@ -1,7 +1,7 @@
 import { Request, Response } from 'express'
 import { prisma } from '../../prisma'
 import { createConnection, pgClient } from '../postgres'
-import { getRedis } from '../redisConfig'
+import { getRedis } from '../config/redisConfig'
 import userRepository from '../repository/UserRepository'
 
 export class GetUserInfoController {

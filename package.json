@@ -5,7 +5,8 @@
     "license": "MIT",
     "scripts": {
         "node": "ts-node-dev src/server.ts",
-        "dev": "nodemon --watch 'src/' --exec 'ts-node src/server.ts' -e ts"
+        "dev": "nodemon --watch 'src/' --exec 'ts-node src/server.ts' -e ts",
+        "dev:queue": "nodemon --watch 'src/queue.ts' --exec 'ts-node src/queue.ts' -e ts"
     },
     "dependencies": {
         "@prisma/client": "^4.0.0",

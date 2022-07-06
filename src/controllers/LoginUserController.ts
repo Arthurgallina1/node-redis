@@ -3,7 +3,7 @@ import { Request, Response } from 'express'
 import { sign } from 'jsonwebtoken'
 import { prisma } from '../../prisma'
 import { createConnection } from '../postgres'
-import { setRedis } from '../redisConfig'
+import { setRedis } from '../config/redisConfig'
 
 type User = {
     username: string

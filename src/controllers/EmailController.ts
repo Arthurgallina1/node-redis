@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import Mail from '../lib/Mail'
-import { getRedis } from '../redisConfig'
+import Queue from '../lib/Queue'
+
+import { getRedis } from '../config/redisConfig'
 import userRepository from '../repository/UserRepository'
 
 export class EmailController {
@@ -13,12 +15,7 @@ export class EmailController {
             password,
         }
 
-        Mail.sendMail({
-            from: 'Test <test@teste.com.br>',
-            to: `${username}<${email}>`,
-            subject: 'Cadastro de usuário',
-            html: `Olá, ${username}, bem-vindo ao sistema de fila`,
-        })
+        await Queue.add({ user })
 
         return response.json(user)
     }
