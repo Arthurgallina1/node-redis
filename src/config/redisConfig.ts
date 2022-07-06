@@ -7,6 +7,7 @@ const redisConfig = {
 }
 
 const redisClient = new Redis()
+const redisSubscriberClient = new Redis(redisConfig)
 
 function getRedis(value: string) {
     const syncRedisGet = promisify(redisClient.get).bind(redisClient)
@@ -22,4 +23,4 @@ function setRedis(key: string, value: string) {
     // redisClient.set("", "")
 }
 
-export { redisClient, redisConfig, getRedis, setRedis }
+export { redisClient, redisConfig, redisSubscriberClient, getRedis, setRedis }

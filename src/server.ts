@@ -8,11 +8,14 @@ import { createBullBoard } from '@bull-board/api'
 import { BullAdapter } from '@bull-board/api/bullAdapter'
 
 import Queue from './lib/Queue'
+import { redisSubscriberClient } from './config/redisConfig'
+import axios from 'axios'
+import setSubscribers, { Subscribers } from './service/Subscribers'
 
 const serverAdapter = new ExpressAdapter()
 
-const { addQueue, removeQueue, setQueues, replaceQueues } = createBullBoard({
-    queues: Queue.queues.map((queue) => new BullAdapter(queue.bull)), //[new BullAdapter(someQueue), new BullAdapter(someOtherQueue), new BullMQAdapter(queueMQ)],
+createBullBoard({
+    queues: Queue.queues.map((queue) => new BullAdapter(queue.bull)),
     serverAdapter,
 })
 
@@ -22,6 +25,7 @@ serverAdapter.setBasePath('/admin/queues')
 app.use('/admin/queues', serverAdapter.getRouter())
 app.use(express.json())
 app.use(router)
+setSubscribers(redisSubscriberClient)
 
 const PORT = process.env.PORT || 3000
 
