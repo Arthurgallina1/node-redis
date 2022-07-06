@@ -1,46 +1,80 @@
-import { compare } from "bcryptjs";
-import { Request, Response } from "express";
-import { sign } from "jsonwebtoken";
-import { createConnection } from "../postgres";
-import { setRedis } from "../redisConfig";
+import { compare } from 'bcryptjs'
+import { Request, Response } from 'express'
+import { sign } from 'jsonwebtoken'
+import { prisma } from '../../prisma'
+import { createConnection } from '../postgres'
+import { setRedis } from '../redisConfig'
 
 type User = {
-  username: string;
-  password: string;
-  name: string;
-  id: string;
-};
+    username: string
+    password: string
+    name: string
+    id: string
+}
 
 export class LoginUserController {
-  async handle(request: Request, response: Response) {
-    const { username, password } = request.body;
+    async handle(request: Request, response: Response) {
+        const { username, password } = request.body
 
-    const clientConnection = await createConnection();
+        const clientConnection = await createConnection()
 
-    const { rows } = await clientConnection.query(
-      `SELECT * FROM USERS WHERE USERNAME  = $1 LIMIT 1`,
-      [username]
-    );
+        const { rows } = await clientConnection.query(
+            `SELECT * FROM USER WHERE NAME  = $1 LIMIT 1`,
+            [username],
+        )
 
-    if (!rows[0]) {
-      return response.status(401).end();
+        if (!rows[0]) {
+            return response.status(401).end()
+        }
+
+        const user: User = rows[0]
+
+        const passwordMatch = await compare(password, user.password)
+
+        if (!passwordMatch) {
+            return response.status(401).end()
+        }
+
+        const token = sign({}, process.env.JWT_SECRET, {
+            subject: user.id,
+        })
+
+        //         user-${idUser}
+        await setRedis(`user-${user.id}`, JSON.stringify(user))
+
+        return response.json(token)
     }
 
-    const user: User = rows[0];
+    async handlePrisma(request: Request, response: Response) {
+        const { name, password } = request.body
 
-    const passwordMatch = await compare(password, user.password);
+        const user = await prisma.user.findFirst({
+            where: {
+                name,
+            },
+        })
 
-    if (!passwordMatch) {
-      return response.status(401).end();
+        console.log(user)
+
+        if (!user) {
+            return response.status(401).end()
+        }
+
+        // const user: User = rows[0]
+
+        const passwordMatch = await compare(password, user.password)
+
+        if (!passwordMatch) {
+            return response.status(401).end()
+        }
+
+        const token = sign({}, process.env.JWT_SECRET, {
+            subject: String(user.id),
+        })
+
+        //         user-${idUser}
+        await setRedis(`user-${user.id}`, JSON.stringify(user))
+
+        return response.json(token)
     }
-
-    const token = sign({}, process.env.JWT_SECRET, {
-      subject: user.id,
-    });
-
-    // user-${idUser}
-    await setRedis(`user-${user.id}`, JSON.stringify(user));
-
-    return response.json(token);
-  }
 }
