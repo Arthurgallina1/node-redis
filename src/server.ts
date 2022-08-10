@@ -9,8 +9,7 @@ import { BullAdapter } from '@bull-board/api/bullAdapter'
 
 import Queue from './lib/Queue'
 import { redisSubscriberClient } from './config/redisConfig'
-import axios from 'axios'
-import setSubscribers, { Subscribers } from './service/Subscribers'
+import setSubscribers from './service/Subscribers'
 
 const serverAdapter = new ExpressAdapter()
 
@@ -25,7 +24,7 @@ serverAdapter.setBasePath('/admin/queues')
 app.use('/admin/queues', serverAdapter.getRouter())
 app.use(express.json())
 app.use(router)
-setSubscribers(redisSubscriberClient)
+// setSubscribers(redisSubscriberClient)
 
 const PORT = process.env.PORT || 3000
 
